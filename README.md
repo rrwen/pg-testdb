@@ -16,6 +16,135 @@ npm install pg-testdb
 
 For the latest developer version, see [Developer Install](#developer-install).
 
+## Usage
+
+### Step 1. Define Connection Options
+
+First create an object `options` to store the temporary database name and connection details:
+
+* **testdb**: Name of the temporary database to create and test on (must not already exist)
+* **messages**: Set to `true` to enable create, drop, and error messages or `false` to disable
+* **connection**: Object containing PostgreSQL connection details
+* **connection.host**: Host IP address of the PostgreSQL database to connect to
+* **connection.port**: Port of the PostgreSQL database to connect to
+* **connection.user**: Name of PostgreSQL user with administrative privileges
+* **connection.password**: Password for `connection.user`
+
+```
+var options = {
+  testdb: 'pgtestdb',
+  messages: false,
+  connection: {
+    host: 'localhost',
+    port: 5432,
+    user: 'user_name',
+    password: 'secret_password'
+  }
+};
+```
+
+### Step 2. Define Test Queries
+
+Define an [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) `[]` of test queries to be run:
+
+* Each test query in the array is a callback function that consumes a [client](https://node-postgres.com/api/client) object from the [pg](https://www.npmjs.com/package/pg) package
+* Test queries in the array are run one after another (in order)
+
+```javascript
+options.tests = [];
+```
+
+#### 2.1 Creating a Test Table
+
+Initialize your tests by connecting the client and creating a table named `created_table` with columns `some_text` and `some_number`:
+
+|   some_text   |  some_number  |
+| ------------- | ------------- |
+|               |               |
+
+```javascript
+options.tests.push(
+
+ client => {
+  client.connect();
+  return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
+    .then(() => {
+      // do something after table creation
+    })
+    .catch(err => {
+      // handle table creation error
+    });
+  }
+  
+);
+
+```
+
+#### 2.2 Inserting Values into the Test Table
+
+Insert values `'text data 1', 1), ('text data 2', 2)` into `created_table` after its creation:
+
+|   some_text   |  some_number  |
+| ------------- | ------------- |
+| text data  1  |       1       |
+| text data  2  |       2       |
+
+```javascript
+options.tests.push(
+
+  client => {
+    return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
+      .then(() => {
+        // do something after insert
+      })
+      .catch(err => {
+        // handle insert error
+      });
+  }
+  
+);
+
+```
+
+#### 2.3 Querying Values from the Test Table
+
+Select all values from `created_table` after inserting the values:
+
+```javascript
+options.tests.push(
+
+  client => {
+    return client.query('SELECT * FROM created_table;')
+      .then(res => {
+        // do something after select
+        console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
+        console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
+      })
+      .catch(err => {
+        // handle select error
+      });
+  }
+  
+);
+```
+
+### 3. Run the Test Queries
+
+Using the `options` object with the connection details defined from [Step 1](#Step-1.-Define-Connection-Options) and test queries defined from [Step 2](#Step-2.-Define-Test-Queries), the test queries can then be executed in order.  
+  
+Running `pgtestdb` will:
+
+1. Create the temporary database [`options.testdb`](#Step-1.-Define-Connection-Options)
+2. Run the [test queries](#Step-2.-Define-Test-Queries)
+3. Drop the temporary database [`options.testdb`](#Step-1.-Define-Connection-Options) after
+  
+```javascript
+var pgtestdb = require('pg-testdb');
+pgtestdb(options, (err, res) => {
+  // Do something after dropping the temporary test database
+});
+```
+
 ## Developer Notes
 
 ### Developer Install
@@ -62,3 +191,17 @@ git add .
 git commit -a -m "Generic update"
 git push
 ```
+
+### Upload to npm
+
+1. Update the version in `package.json`
+2. Run tests and check for OK status
+3. Login to npm
+4. Publish to npm
+
+```
+npm test
+npm login
+npm publish
+```
+  

@@ -1,5 +1,20 @@
 # pg-testdb
+
+Richard Wen  
+rrwen.dev@gmail.com  
+  
 Module for testing PostgreSQL queries inside isolated databases
+
+## Install
+
+1. Install [Node.js](https://nodejs.org/en/)
+2. Install [pg-testdb](https://www.npmjs.com/package/pg-testdb) via `npm`
+
+```
+npm install pg-testdb
+```
+
+For the latest developer version, see [Developer Install](#developer-install).
 
 ## Developer Notes
 

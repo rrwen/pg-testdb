@@ -7,7 +7,9 @@ Module for testing PostgreSQL queries inside isolated databases
 
 Install the latest developer version with `npm` from github:
 
+```
 npm install git+https://github.com/rrwen/pg-testdb
+```
   
 Install from `git` cloned source:
 

@@ -56,7 +56,7 @@ options.tests = [];
 
 #### 2.1 Creating a Test Table
 
-Initialize your tests by connecting the client and creating a table named `created_table` with columns `some_text` and `some_number`:
+Initialize your tests by connecting the [client](https://node-postgres.com/api/client) object and creating a table named `created_table` with columns `some_text` and `some_number`:
 
 |   some_text   |  some_number  |
 | ------------- | ------------- |
@@ -82,7 +82,7 @@ options.tests.push(
 
 #### 2.2 Inserting Values into the Test Table
 
-Insert values `'text data 1', 1), ('text data 2', 2)` into `created_table` after its creation:
+Insert values `'text data 1', 1), ('text data 2', 2)` into `created_table` after [its creation](#21-creating-a-test-table):
 
 |   some_text   |  some_number  |
 | ------------- | ------------- |
@@ -108,7 +108,7 @@ options.tests.push(
 
 #### 2.3 Querying Values from the Test Table
 
-Select all values from `created_table` after inserting the values:
+Select all values from `created_table` after (inserting the values)[#22-inserting-values-into-the-test-table]:
 
 ```javascript
 options.tests.push(
@@ -130,13 +130,13 @@ options.tests.push(
 
 ### 3. Run the Test Queries
 
-Using the `options` object with the connection details defined from [Step 1](#Step-1.-Define-Connection-Options) and test queries defined from [Step 2](#Step-2.-Define-Test-Queries), the test queries can then be executed in order.  
+Using the `options` object with the connection details defined from [Step 1](#step-1-define-connection-options) and test queries defined from [Step 2](#step-2-define-test-queries), the test queries can then be executed in order.  
   
 Running `pgtestdb` will:
 
-1. Create the temporary database [`options.testdb`](#Step-1.-Define-Connection-Options)
-2. Run the [test queries](#Step-2.-Define-Test-Queries)
-3. Drop the temporary database [`options.testdb`](#Step-1.-Define-Connection-Options) after
+1. Create the temporary database [`options.testdb`](#step-1-define-connection-options)
+2. Run the [test queries](#step-2-define-test-queries)
+3. Drop the temporary database [`options.testdb`](#step-1-define-connection-options) after
   
 ```javascript
 var pgtestdb = require('pg-testdb');

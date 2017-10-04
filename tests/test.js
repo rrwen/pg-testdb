@@ -31,12 +31,16 @@ var options = {
 };
 
 // (test_file) Pipe tests to file and output
+if (!fs.existsSync('./tests/log')){
+    fs.mkdirSync('./tests/log');
+}
 var testFile = './tests/log/test_' + json.version.split('.').join('_') + '.txt';
 test.createStream().pipe(fs.createWriteStream(testFile));
 test.createStream().pipe(process.stdout);
 
 // (test_run) Run tests
 test('Tests for ' + json.name + ' (' + json.version + ')', t => {
+  t.comment('Node.js (' + process.version + ')');
   t.comment('Description: ' + json.description);
   t.comment('Date: ' + moment().format('YYYY-MM-DD hh:mm:ss'));
   t.comment('Dependencies: ' + testedPackages.join(', '));

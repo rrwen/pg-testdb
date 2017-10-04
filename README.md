@@ -63,9 +63,7 @@ Initialize your tests by connecting the [client](https://node-postgres.com/api/c
 |               |               |
 
 ```javascript
-options.tests.push(
-
- client => {
+options.tests[0] = client => {
   client.connect();
   return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
     .then(() => {
@@ -74,9 +72,7 @@ options.tests.push(
     .catch(err => {
       // handle table creation error
     });
-  }
-  
-);
+};
 
 ```
 
@@ -90,20 +86,15 @@ Insert values `'text data 1', 1), ('text data 2', 2)` into `created_table` after
 | text data  2  |       2       |
 
 ```javascript
-options.tests.push(
-
-  client => {
-    return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
-      .then(() => {
-        // do something after insert
-      })
-      .catch(err => {
-        // handle insert error
-      });
-  }
-  
-);
-
+options.tests[1] = client => {
+  return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
+    .then(() => {
+      // do something after insert
+    })
+    .catch(err => {
+      // handle insert error
+    });
+};
 ```
 
 #### 2.3 Querying Values from the Test Table
@@ -111,21 +102,17 @@ options.tests.push(
 Select all values from `created_table` after [inserting the values](#22-inserting-values-into-the-test-table):
 
 ```javascript
-options.tests.push(
-
-  client => {
-    return client.query('SELECT * FROM created_table;')
-      .then(res => {
-        // do something after select
-        console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
-        console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
-      })
-      .catch(err => {
-        // handle select error
-      });
-  }
-  
-);
+options.tests[2] = client => {
+  return client.query('SELECT * FROM created_table;')
+    .then(res => {
+      // do something after select
+      console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
+      console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
+    })
+    .catch(err => {
+      // handle select error
+    });
+};
 ```
 
 ### 3. Run the Test Queries

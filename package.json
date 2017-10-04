@@ -1,0 +1,58 @@
+{
+  "name": "pg-testdb",
+  "version": "0.0.0",
+  "description": "Module for testing PostgreSQL queries inside isolated databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/test.js"
+  },
+  "author": "Richard Wen",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^7.3.0",
+    "pgtools": "^0.3.0"
+  },
+  "devDependencies": {
+    "moment": "^2.18.1",
+    "tape": "^4.8.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rrwen/pg-testdb.git"
+  },
+  "keywords": [
+    "easy",
+    "quick",
+    "isolated",
+    "temporary",
+    "temp",
+    "unit",
+    "test",
+    "testing",
+    "tap",
+    "promise",
+    "tape",
+    "postgres",
+    "pg",
+    "libpq",
+    "postgre",
+    "data",
+    "relational",
+    "database",
+    "db",
+    "rdbms",
+    "management",
+    "system",
+    "postgresql",
+    "createdb",
+    "dropdb",
+    "pgtools"
+  ],
+  "bugs": {
+    "url": "https://github.com/rrwen/pg-testdb/issues"
+  },
+  "homepage": "https://github.com/rrwen/pg-testdb#readme"
+}

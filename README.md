@@ -30,7 +30,7 @@ First create an object `options` to store the temporary database name and connec
 * **connection.user**: Name of PostgreSQL user with administrative privileges
 * **connection.password**: Password for `connection.user`
 
-```
+```javascript
 var options = {
   testdb: 'pgtestdb',
   messages: false,
@@ -108,7 +108,7 @@ options.tests.push(
 
 #### 2.3 Querying Values from the Test Table
 
-Select all values from `created_table` after (inserting the values)[#22-inserting-values-into-the-test-table]:
+Select all values from `created_table` after [inserting the values](#22-inserting-values-into-the-test-table):
 
 ```javascript
 options.tests.push(

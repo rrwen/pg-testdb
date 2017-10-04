@@ -1,7 +1,7 @@
 {
   "name": "pg-testdb",
   "version": "0.0.0",
-  "description": "Module for testing PostgreSQL queries inside isolated databases",
+  "description": "Module for PostgreSQL tests inside temporary databases",
   "main": "index.js",
   "scripts": {
     "test": "node tests/test.js"

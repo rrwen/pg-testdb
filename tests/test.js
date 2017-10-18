@@ -25,8 +25,8 @@ var options = {
   connection: {
     host: 'localhost',
     port: 5432,
-    user: 'postgres',
-    password: 'postgres123'
+    user: 'pgtestdb',
+    password: 'pgtestdbpassword'
   }
 };
 

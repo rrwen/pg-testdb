@@ -2,7 +2,7 @@ TAP version 13
 # Tests for pg-testdb (0.0.3)
 # Node.js (v8.4.0)
 # Description: Module for PostgreSQL tests inside temporary databases
-# Date: 2017-10-04 01:19:11
+# Date: 2017-10-18 12:41:22
 # Dependencies: pg (^7.3.0), pgtools (^0.3.0)
 # Developer: moment (^2.18.1), tape (^4.8.0)
 # BEGIN

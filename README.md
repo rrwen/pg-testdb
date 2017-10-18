@@ -18,6 +18,87 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
+The code below demonstrates setting up a temporary testing database in PostgreSQL and running simple queries against it:
+
+1. The test database is created
+2. An array of test functions are executed in order inside the test database
+3. The test database is dropped after the test queries are run or if there is an error
+4. Steps 1 to 3 will occur everytime the code is run to isolate tests inside of the test database
+
+```javascript
+var pgtestdb = require('pg-testdb');
+
+// (test_db) Postgres temporary test database details
+var options = {
+  testdb: 'pgtestdb', // test db name
+  messages: false, // display info
+  connection: { // postgres connection details
+    host: 'localhost',
+    port: 5432,
+    user: 'user_name', // should be an admin user
+    password: 'secret_password'
+  }
+};
+
+// (test_functions) Array of test functions to execute in order
+options.tests = [
+
+  // (test_init) Connect client and create test table
+  client => {
+    client.connect(); // connect client
+    return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
+      .then(() => {
+        // do something after table creation
+        console.log('Test table "created_table" created.');
+      })
+      .catch(err => {
+        // handle table creation error
+        console.log('Test table "created_table" creation failed.');
+      });
+  },
+
+  // (test_1) Test inserts into test table
+  client => {
+    return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
+      .then(() => {
+        // do something after insert
+        console.log('INSERT test passed!');
+      })
+      .catch(err => {
+        // handle insert error
+        console.log('INSERT test failed.');
+      });
+  },
+
+  // (test_2) Test select query on test table
+  client => {
+    return client.query('SELECT * FROM created_table;')
+      .then(res => {
+        // do something after select
+        console.log('SELECT test passed!');
+        console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
+        console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
+      })
+      .catch(err => {
+        // handle select error
+        console.log('SELECT test failed.');
+      });
+  }
+
+  // (test_etc) Test 3 .. Test N
+];
+
+// (test_run) Run the tests from options.tests
+pgtestdb(options, (err, res) => {
+  // Do something after dropping the test database
+  console.log('Test database "pgtestdb" dropped.');
+});
+```
+
+See the [Guide](#guide) for more details.
+
+## Guide
+
 ### Step 1. Define Connection Options
 
 First create an object `options` to store the temporary database name and connection details:
@@ -68,12 +149,13 @@ options.tests[0] = client => {
   return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
     .then(() => {
       // do something after table creation
+      console.log('Test table created!');
     })
     .catch(err => {
       // handle table creation error
+      console.error('Test table creation failed.');
     });
 };
-
 ```
 
 #### 2.2 Inserting Values into the Test Table
@@ -90,9 +172,11 @@ options.tests[1] = client => {
   return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
     .then(() => {
       // do something after insert
+      console.log('INSERT test passed!');
     })
     .catch(err => {
       // handle insert error
+      console.error('INSERT test failed.');
     });
 };
 ```
@@ -106,11 +190,13 @@ options.tests[2] = client => {
   return client.query('SELECT * FROM created_table;')
     .then(res => {
       // do something after select
+      console.log('SELECT test passed!');
       console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
       console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
     })
     .catch(err => {
       // handle select error
+      console.log('SELECT test failed.');
     });
 };
 ```
@@ -123,14 +209,85 @@ Running `pgtestdb` will:
 
 1. Create the temporary database [`options.testdb`](#step-1-define-connection-options)
 2. Run the [test queries](#step-2-define-test-queries)
-3. Drop the temporary database [`options.testdb`](#step-1-define-connection-options) after
+3. Drop the temporary database [`options.testdb`](#step-1-define-connection-options) whether tests passed or failed
   
 ```javascript
 var pgtestdb = require('pg-testdb');
 pgtestdb(options, (err, res) => {
-  // Do something after dropping the temporary test database
+  // Do something after dropping the test database
+  console.log('Testing ended.');
 });
 ```
+
+### 4. Example with tape
+
+A testing framework such as [tape](https://www.npmjs.com/package/tape) can be used with `pg-testdb` such that the test functions and execution is inside tape's test function call:
+
+```javascript
+var pgtestdb = require('pg-testdb');
+var test = require('tape');
+
+// (test_db) Define a test database
+var options = {
+  testdb: 'pgtestdb', // test db name
+  messages: false, // display info
+  connection: { // postgres connection details
+    host: 'localhost',
+    port: 5432,
+    user: 'user_name', // should be an admin user
+    password: 'secret_password'
+  }
+};
+
+// (test_tape) Define test functions and run inside tape
+test('Tests for tape example', t => {
+
+  // (test_functions) Define test functions
+  options.tests = [
+
+    // (test_init) Connect client and create test table
+    client => {
+      client.connect();
+      return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
+        .then(() => {
+          t.pass('Test table "created_table" created.');
+        })
+        .catch(err => {
+          t.fail('Test table "created_table" creation failed.');
+        });
+    },
+
+    // (test_1) Test inserts into test table
+    client => {
+      return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
+        .then(() => {
+          t.pass('INSERT test passed!');
+        })
+        .catch(err => {
+          t.fail('INSERT test failed.');
+        });
+    },
+
+    // (test_2) Test select query on test table
+    client => {
+      return client.query('SELECT * FROM created_table;')
+        .then(res => {
+          t.pass('SELECT test passed!');
+        })
+        .catch(err => {
+          t.fail('SELECT test failed.');
+        });
+    }
+  ];
+
+  // (test_run) Run the tests
+  pgtestdb(options, (err, res) => {
+    t.comment('Test database "pgtestdb" dropped.');
+  });
+});
+```
+
+See [tests/test.js](https://github.com/rrwen/pg-testdb/blob/master/tests/test.js) for more examples with tape.
 
 ## Developer Notes
 
@@ -159,8 +316,9 @@ npm install
 1. Clone into current path `git clone https://github.com/rrwen/pg-testdb`
 2. Enter into folder `cd pg-testdb`
 3. Ensure [tape](https://www.npmjs.com/package/tape) and [moment](https://www.npmjs.com/package/moment) are available
-4. Run tests
-5. Results are saved to `./tests/log` with each file corresponding to a version tested
+4. Setup test environment (See [tests/README.md](https://github.com/rrwen/pg-testdb/blob/master/tests/README.md))
+5. Run tests
+6. Results are saved to `./tests/log` with each file corresponding to a version tested
 
 ```
 npm install
@@ -191,4 +349,11 @@ npm test
 npm login
 npm publish
 ```
-  
+
+### Implementation
+
+The [npm](https://www.npmjs.com/) package [pg-testdb](https://www.npmjs.com/package/pg-testdb) was implemented with [pg](https://www.npmjs.com/package/pg) and [pgtools](https://www.npmjs.com/package/pgtools). `pg` was used for creating client connections to PostgreSQL databases in [Node.js](https://nodejs.org/), while `pgtools` was used to temporarily create and drop PostgreSQL databases:
+
+1. Create a temporary database with `pgtools`
+2. Create a client connection to the temporary database with `pg`
+3. Drop the temporary database with `pgtools`

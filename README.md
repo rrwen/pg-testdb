@@ -11,19 +11,22 @@ Module for testing PostgreSQL queries inside isolated databases
 2. Install [pg-testdb](https://www.npmjs.com/package/pg-testdb) via `npm`
 
 ```
-npm install pg-testdb
+npm install pg-testdb --save-dev
 ```
 
 For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
-The code below demonstrates setting up a temporary testing database in PostgreSQL and running simple queries against it:
+The code below sets up a temporary test database in PostgreSQL and runs queries in it.  
+  
+When the code is executed, the following happens:
 
-1. The test database is created
-2. An array of test functions are executed in order inside the test database
-3. The test database is dropped after the test queries are run or if there is an error
-4. Steps 1 to 3 will occur everytime the code is run to isolate tests inside of the test database
+1. Test database details are defined in the `options` object
+2. Test functions are defined for the test database inside the `options.tests` array
+3. Test functions in `options.tests` are run in order inside the test database named by `options.testdb`
+4. Test database is dropped after the test functions in `options.tests` are run or if an error occurs
+5. Steps 1 to 4 are repeated when the code is run again to isolate `options.tests` inside of `options.testdb`
 
 ```javascript
 var pgtestdb = require('pg-testdb');

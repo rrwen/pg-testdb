@@ -1,0 +1,9 @@
+language: node_js
+services:
+  - postgresql
+before_script:
+  - psql -c 'CREATE ROLE pgtestdb WITH LOGIN PASSWORD 'pgtestdbpassword' SUPERUSER;' -U postgres
+install:
+  - npm install
+script:
+  - npm test

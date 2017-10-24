@@ -1,9 +1,10 @@
 {
   "name": "pg-testdb",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Module for PostgreSQL tests inside temporary databases",
   "main": "index.js",
   "scripts": {
+    "coverage": "istanbul cover node_modules/tape/bin/tape tests/test.js && cat ./coverage/lcov.info | coveralls",
     "test": "node tests/test.js"
   },
   "author": "Richard Wen",
@@ -13,7 +14,10 @@
     "pgtools": "^0.3.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.0",
+    "istanbul": "^0.4.5",
     "moment": "^2.18.1",
+    "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
   },
   "directories": {

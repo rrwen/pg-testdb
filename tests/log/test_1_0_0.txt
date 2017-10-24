@@ -1,0 +1,36 @@
+TAP version 13
+# Tests for pg-testdb (1.0.0)
+# Node.js (v7.9.0)
+# Description: Module for PostgreSQL tests inside temporary databases
+# Date: 2017-10-23 11:59:00
+# Dependencies: pg (^7.3.0), pgtools (^0.3.0)
+# Developer: moment (^2.18.1), tape (^4.8.0)
+# BEGIN
+# (A) tests on usage examples
+ok 1 (A) create table
+ok 2 (A) insert into table
+ok 3 (A) select from table
+ok 4 (A) update table
+ok 5 (A) delete from table
+ok 6 (A) create view
+ok 7 (A) select from view
+ok 8 (A) drop view
+ok 9 (A) drop table
+ok 10 (A) select nonexist
+ok 11 (A) invalid query
+# (B) Tests based on node pg client query guide by Brian Carlson: https://node-postgres.com/features/queries
+ok 12 (B) create users table
+ok 13 (B) create userids table
+ok 14 (B) create some_table table
+ok 15 (B) insert into some_table table
+ok 16 (B) text only
+ok 17 (B) parameterized query
+ok 18 (B) query config object
+ok 19 (B) prepared statements
+ok 20 (B) row mode fields
+ok 21 (B) row mode rows
+ok 22 (B) types fields
+ok 23 (B) types rows
+# END
+
+1..23

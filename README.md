@@ -18,19 +18,21 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
-The easiest way to use this package is by first installing the template generator [pg-testdb-template](https://www.npmjs.com/package/pg-testdb-template) globally with `npm`:
+The easiest way to use this package is to first install the template generator [pg-testdb-template](https://www.npmjs.com/package/pg-testdb-template) globally with `npm`:
 
 ```
 npm install -g pg-testdb-template
 
 ```
 
-Then using `pg-testdb-template` to generate a template file named `pg-testdb-template.js` in the current directory for editing:
+Use `pg-testdb-template` to generate a template file named `pg-testdb-template.js` in the current directory for editing:
 
 ```
 pg-testdb-template
 ```
 
+The template generated will be similar to the [Full Example](#4-full-example) provided in the [Guide](#guide).  
+  
 See the [Guide](#guide) for more details.
 
 ## Guide

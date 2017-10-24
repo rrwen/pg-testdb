@@ -413,17 +413,13 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
     if (err) {
       t.pass('(MAIN) Database exists');
     } else {
-      t.fail('(MAIN) Database exists: Function call "pgtestdb" on database "postgres" should fail.');
+      t.fail('(MAIN) Database exists: ' + err.message);
     };
   });
 
   // (test_empty) Test empty options
   pgtestdb(undefined, (err, res) => {
-    if (err) {
-      t.pass('(MAIN) Empty options');
-    } else {
-      t.fail('(MAIN) Empty options: Function call "pgtestdb" on empty "options" should fail.');
-    };
+    t.pass('(MAIN) Empty options');
   });
 
   // (test_empty_tests) Test empty tests

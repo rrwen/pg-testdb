@@ -1,6 +1,6 @@
 {
   "name": "pg-testdb",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Module for PostgreSQL tests inside temporary databases",
   "main": "index.js",
   "scripts": {

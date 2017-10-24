@@ -10,7 +10,7 @@ Module for testing PostgreSQL queries inside isolated databases
 [![Coverage Status](https://coveralls.io/repos/github/rrwen/pg-testdb/badge.svg?branch=master)](https://coveralls.io/github/rrwen/pg-testdb?branch=master)
 [![npm](https://img.shields.io/npm/dt/pg-testdb.svg)](https://www.npmjs.com/package/pg-testdb)
 [![GitHub license](https://img.shields.io/github/license/rrwen/pg-testdb.svg)](https://github.com/rrwen/pg-testdb/blob/master/LICENSE)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/rrwen/pg-testdb.svg?style=social)](https://twitter.com/intent/tweet?text=%23nodejs%20%23npm%20package%20for%20isolated%20%23postgres%20%23postgresql%20%23pg%20%23unittest:%20url=https%3A%2F%2Fgithub.com%2Frrwen%2Fpg-testdb)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/rrwen/pg-testdb.svg?style=social)](https://twitter.com/intent/tweet?text=%23nodejs%20%23npm%20package%20for%20isolated%20%23postgres%20%23postgresql%20%23pg%20%23database%20%23unittest:%20https%3A%2F%2Fgithub.com%2Frrwen%2Fpg-testdb)
 
 ## Install
 

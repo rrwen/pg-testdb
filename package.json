@@ -1,9 +1,10 @@
 {
   "name": "pg-testdb",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Module for PostgreSQL tests inside temporary databases",
   "main": "index.js",
   "scripts": {
+    "istanbul": "istanbul cover node_modules/tape/bin/tape tests/test.js",
     "coverage": "istanbul cover node_modules/tape/bin/tape tests/test.js && cat ./coverage/lcov.info | coveralls",
     "test": "node tests/test.js"
   },

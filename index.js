@@ -27,7 +27,7 @@ module.exports = function(options, callback) {
 
 		// (test_create_error) Exit on database creation error
 		if (err) {
-			throw Error(err);
+			callback(err);
 		}
 		if (!err && options.messages) {
 			console.log('CREATE ' + options.testdb);
@@ -66,6 +66,8 @@ module.exports = function(options, callback) {
 					client.end();
 					pgtools.dropdb(options.connection, options.testdb, callback);
 				});
-		}
+		} else {
+			pgtools.dropdb(options.connection, options.testdb, callback);
+		};
 	});
 };

@@ -21,13 +21,54 @@ for (var k in json.devDependencies) {
 // (test_database) Database connection details
 var options = {
   testdb: 'pgtestdb',
-  messages: false,
   connection: {
     host: 'localhost',
     port: 5432,
     user: 'pgtestdb',
     password: 'pgtestdbpassword'
   }
+};
+
+// (test_options_exists) Existing database
+var optionsExists = {
+  testdb: 'postgres',
+  connection: {
+    host: 'localhost',
+    port: 5432,
+    user: 'pgtestdb',
+    password: 'pgtestdbpassword'
+  }
+};
+
+// (test_empty_tests) Empty tests
+var optionsEmptyTests = {
+  testdb: 'pgtestdb2',
+  connection: {
+    host: 'localhost',
+    port: 5432,
+    user: 'pgtestdb',
+    password: 'pgtestdbpassword'
+  }
+};
+
+// (test_single_tests) Empty tests
+var optionsSingleTests = {
+  testdb: 'pgtestdb3',
+  connection: {
+    host: 'localhost',
+    port: 5432,
+    user: 'pgtestdb',
+    password: 'pgtestdbpassword'
+  },
+  tests: [
+    client => {
+      client.connect();
+      return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
+        .catch(err => {
+          console.error(err);
+        });
+    },
+  ]
 };
 
 // (test_file) Pipe tests to file and output
@@ -367,9 +408,50 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
     }
   ];
 
+  // (test_exists) Test existing database
+  pgtestdb(optionsExists, (err, res) => {
+    if (err) {
+      t.pass('(MAIN) Database exists');
+    } else {
+      t.fail('(MAIN) Database exists: Function call "pgtestdb" on database "postgres" should fail.');
+    };
+  });
+
+  // (test_empty) Test empty options
+  pgtestdb(undefined, (err, res) => {
+    if (err) {
+      t.pass('(MAIN) Empty options');
+    } else {
+      t.fail('(MAIN) Empty options: Function call "pgtestdb" on empty "options" should fail.');
+    };
+  });
+
+  // (test_empty_tests) Test empty tests
+  pgtestdb(optionsEmptyTests, (err, res) => {
+    if (err) {
+      t.fail('(MAIN) Empty tests: ' + err.message);
+    } else {
+      t.pass('(MAIN) Empty tests');
+    }
+  });
+
+  // (test_single_tests) Test single tests
+  pgtestdb(optionsSingleTests, (err, res) => {
+    if (err) {
+      t.fail('(MAIN) Single tests: ' + err.message);
+    } else {
+      t.pass('(MAIN) Single tests');
+    }
+  });
+
   // (test_db) Run client tests on database
   pgtestdb(options, (err, res) => {
-    t.comment('END');
+    if (!err) {
+      t.pass('(MAIN) Drop database');
+      t.comment('END');
+    } else {
+      t.fail('(MAIN) Drop database: ' + err.message);
+    };
     t.end();
   });
 });

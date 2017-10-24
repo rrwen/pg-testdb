@@ -18,89 +18,26 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
-The code below sets up a temporary test database in PostgreSQL and runs queries in it.  
-  
-When the code is executed, the following happens:
+The easiest way to use this package is by first installing the template generator [pg-testdb-template](https://www.npmjs.com/package/pg-testdb-template) globally with `npm`:
 
-1. Test database details are defined in the `options` object
-2. Test functions are defined for the test database inside the `options.tests` array
-3. Test functions in `options.tests` are run in order inside the test database named by `options.testdb`
-4. Test database is dropped after the test functions in `options.tests` are run or if an error occurs
-5. Steps 1 to 4 are repeated when the code is run again to isolate `options.tests` inside of `options.testdb`
+```
+npm install -g pg-testdb-template
 
-```javascript
-var pgtestdb = require('pg-testdb');
+```
 
-// (test_db) Postgres temporary test database details
-var options = {
-  testdb: 'pgtestdb', // test db name
-  messages: false, // display info
-  connection: { // postgres connection details
-    host: 'localhost',
-    port: 5432,
-    user: 'user_name', // should be an admin user
-    password: 'secret_password'
-  }
-};
+Then using `pg-testdb-template` to generate a template file named `pg-testdb-template.js` in the current directory for editing:
 
-// (test_functions) Array of test functions to execute in order
-options.tests = [
-
-  // (test_init) Connect client and create test table
-  client => {
-    client.connect(); // connect client
-    return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
-      .then(() => {
-        // do something after table creation
-        console.log('Test table "created_table" created.');
-      })
-      .catch(err => {
-        // handle table creation error
-        console.log('Test table "created_table" creation failed.');
-      });
-  },
-
-  // (test_1) Test inserts into test table
-  client => {
-    return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
-      .then(() => {
-        // do something after insert
-        console.log('INSERT test passed!');
-      })
-      .catch(err => {
-        // handle insert error
-        console.log('INSERT test failed.');
-      });
-  },
-
-  // (test_2) Test select query on test table
-  client => {
-    return client.query('SELECT * FROM created_table;')
-      .then(res => {
-        // do something after select
-        console.log('SELECT test passed!');
-        console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
-        console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
-      })
-      .catch(err => {
-        // handle select error
-        console.log('SELECT test failed.');
-      });
-  }
-
-  // (test_etc) Test 3 .. Test N
-];
-
-// (test_run) Run the tests from options.tests
-pgtestdb(options, (err, res) => {
-  // Do something after dropping the test database
-  console.log('Test database "pgtestdb" dropped.');
-});
+```
+pg-testdb-template
 ```
 
 See the [Guide](#guide) for more details.
 
 ## Guide
+
+This guide will help you understand how to run tests inside a test PostgreSQL database using `pg-testdb`.  
+  
+A step-by-step guide, full example, and [tape](https://www.npmjs.com/package/tape) example are provided.
 
 ### Step 1. Define Connection Options
 
@@ -222,7 +159,111 @@ pgtestdb(options, (err, res) => {
 });
 ```
 
-### 4. Example with tape
+### 4. Full Example
+
+The code below sets up a temporary test database in PostgreSQL and runs queries in it.  
+  
+When the code is executed, the following happens:
+
+1. Test database details are defined in the `options` object
+2. Test functions are defined for the test database inside the `options.tests` array
+3. Test functions in `options.tests` are run in order inside the test database named by `options.testdb`
+4. Test database is dropped after the test functions in `options.tests` are run or if an error occurs
+5. Steps 1 to 4 are repeated when the code is run again to isolate `options.tests` inside of `options.testdb`
+
+```javascript
+var pgtestdb = require('pg-testdb');
+
+// 1. Define test database details
+// Enter your Postgres connection details below
+// The user should be have super user privileges
+// "testdb" is the test database, which should not already exist
+var options = {
+  testdb: 'pgtestdb', // test db name
+  messages: false, // display info
+  connection: { // postgres connection details
+    host: 'localhost',
+    port: 5432,
+    user: 'user_name', // should be a super user
+    password: 'secret_password'
+  }
+};
+
+// 2. Define test functions
+// Add test functions to execute inside the test database in order
+// Each function has access to the client object from pg (https://www.npmjs.com/package/pg)
+// Typical usage of the object involves returning "client.query();"
+options.tests = [
+
+  // 2.1 Define initial test function
+  // The first function should should run "client.connect();" to connect to the test database
+  // This function can be used to initialize tables for testing
+  client => {
+    client.connect(); // IMPORTANT: connect client
+    return client.query('CREATE TABLE created_table (some_text text, some_number numeric);')
+      .then(() => {
+        // Do something after table creation
+        console.log('Test table "created_table" created.');
+      })
+      .catch(err => {
+        // Handle table creation error
+        console.log('Test table "created_table" creation failed.');
+      });
+  },
+
+  // 2.2 Define second test function
+  // The second function runs after the first one succeeds
+  // This function can be used to include data into the table created from the first function
+  client => {
+    return client.query("INSERT INTO created_table VALUES ('text data 1', 1), ('text data 2', 2);")
+      .then(() => {
+        // Do something after insert
+        console.log('INSERT test passed!');
+      })
+      .catch(err => {
+        // Handle insert error
+        console.log('INSERT test failed.');
+      });
+  },
+
+  // 2.3 Define third test function
+  // The third function runs after the second one succeeds
+  // This function can be used to query the inserted data from the third function
+  client => {
+    return client.query('SELECT * FROM created_table;')
+      .then(res => {
+        // Do something after select query
+        console.log('SELECT test passed!');
+        console.log(res.rows[0]); // {some_text: 'text data 1', some_number: '1'}
+        console.log(res.rows[1]); // {some_text: 'text data 2', some_number: '2'}
+      })
+      .catch(err => {
+        // Handle select query error
+        console.log('SELECT test failed.');
+      });
+  }
+
+  // 2.4 Define additional test functions
+  // Any number of functions following the above structure can be defined
+  // If a function errors out, the test database will be dropped and the error handled
+];
+
+// 3. Run test functions in test database
+// Each function in "options.tests" is run in order inside the defined "options.testdb"
+// If an error occurs, the error will be handled as defined and the test database dropped
+// Re-running this with the defined "options" will recreate the test database and run the test functions inside it
+pgtestdb(options, (err, res) => {
+
+  // 4. Drop test database
+  // The test database is dropped if all tests succeed or if an error occurs
+  // Do something after dropping the test database
+  console.log('Test database "pgtestdb" dropped.');
+});
+```
+
+This example can be generated with [pg-testdb-template](https://www.npmjs.com/package/pg-testdb-template) as shown in [Usage](#usage).
+
+### 5. Example with tape
 
 A testing framework such as [tape](https://www.npmjs.com/package/tape) can be used with `pg-testdb` such that the test functions and execution is inside tape's test function call:
 
